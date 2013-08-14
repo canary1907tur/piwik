@@ -12,12 +12,12 @@
 namespace Piwik\Plugins\TreemapVisualization;
 
 use Piwik\View;
-use Piwik\DataTableVisualization;
+use Piwik\Visualization\Graph;
 
 /**
  * TODO
  */
-class Treemap extends DataTableVisualization
+class Treemap extends Graph
 {
     const ID = 'infoviz-treemap';
     const FOOTER_ICON = 'plugins/TreemapVisualization/images/treemap-icon.png';
