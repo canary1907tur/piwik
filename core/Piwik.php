@@ -104,20 +104,6 @@ class Piwik
     }
 
     /**
-     * Prefix class name (if needed)
-     *
-     * @param string $class
-     * @return string
-     */
-    static public function prefixClass($class)
-    {
-        if (!strncmp($class, Common::CLASSES_PREFIX, strlen(Common::CLASSES_PREFIX))) {
-            return $class;
-        }
-        return Common::CLASSES_PREFIX . $class;
-    }
-
-    /**
      * Uninstallation helper
      */
     static public function uninstall()
@@ -1130,6 +1116,11 @@ class Piwik
         Piwik::getSqlProfilingQueryBreakdownOutput($infoIndexedByQuery);
     }
 
+    static private function sortTimeDesc($a, $b)
+    {
+        return $a['sumTimeMs'] < $b['sumTimeMs'];
+    }
+
     /**
      * Outputs SQL Profiling reports
      * It is automatically called when enabling the SQL profiling in the config file enable_sql_profiler
@@ -1156,15 +1147,9 @@ class Piwik
             $infoIndexedByQuery[$query->getQuery()] = $new;
         }
 
-        if (!function_exists('sortTimeDesc')) {
-            function sortTimeDesc($a, $b)
-            {
-                return $a['sumTimeMs'] < $b['sumTimeMs'];
-            }
-        }
-        uasort($infoIndexedByQuery, 'sortTimeDesc');
+        uasort($infoIndexedByQuery, 'self::sortTimeDesc');
 
-        $str = '<hr /><b>SQL Profiler</b><hr /><b>Summary</b><br/>';
+        $str = '<hr /><strong>SQL Profiler</strong><hr /><strong>Summary</strong><br/>';
         $totalTime = $profiler->getTotalElapsedSecs();
         $queryCount = $profiler->getTotalNumQueries();
         $longestTime = 0;
@@ -1190,7 +1175,7 @@ class Piwik
      */
     static private function getSqlProfilingQueryBreakdownOutput($infoIndexedByQuery)
     {
-        $output = '<hr /><b>Breakdown by query</b><br/>';
+        $output = '<hr /><strong>Breakdown by query</strong><br/>';
         foreach ($infoIndexedByQuery as $query => $queryInfo) {
             $timeMs = round($queryInfo['sumTimeMs'], 1);
             $count = $queryInfo['count'];
