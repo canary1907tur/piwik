@@ -1218,7 +1218,7 @@ class ViewDataTable
                         'format' => $format,
                         'var' => $format,
                         'title' => Piwik_Translate($info['title']),
-                        'icon' => $info['icon']
+                        'icon' => $info['table_icon']
                     );
                 }
             }

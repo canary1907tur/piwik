@@ -55,12 +55,13 @@
                     enable: false, // TODO: enable
                 },
                 onCreateLabel: function (nodeElement, node) {
-                    $(nodeElement).text(node.name);
+                    $(nodeElement).append($('<span></span>').text(node.name).addClass("infoviz-treemap-node-label"));
                 },
             });
 
             var data = JSON.parse(treemapContainer.attr('data-data'));
-            this.prependDataTableIdToNodeIds(thisId, data);
+            this._prependDataTableIdToNodeIds(thisId, data);
+            this._setTreemapColors(data);
 
             this.treemap.loadJSON(data);
             this.treemap.refresh();
@@ -69,14 +70,40 @@
         /**
          * TODO
          */
-        prependDataTableIdToNodeIds: function (prefix, data) {
+        _prependDataTableIdToNodeIds: function (prefix, data) {
             data.id = prefix + '-' + data.id;
 
             var children = data.children || [];
             for (var i = 0; i != children.length; ++i) {
-                this.prependDataTableIdToNodeIds(prefix, children[i]);
+                this._prependDataTableIdToNodeIds(prefix, children[i]);
             }
-        }
+        },
+
+        /**
+         * TODO
+         * TODO: shouldn't use series colors, color should reperesent the % evolution from past period
+         */
+        _setTreemapColors: function (root) {
+            var seriesColorNames = ['series1', 'series2', 'series3', 'series4', 'series5',
+                                    'series6', 'series7', 'series8', 'series9', 'series10'];
+            var colors = piwik.ColorManager.getColors('pie-graph-colors', seriesColorNames, true);
+
+            this._setTreemapNodeColors(colors, root, 0);
+        },
+
+        /**
+         * TODO
+         */
+         _setTreemapNodeColors: function (colors, node, colorIdx) {
+            if (node.children.length) {
+                colorIdx = 0;
+                for (var i = 0; i != node.children.length; ++i, ++colorIdx) {
+                    this._setTreemapNodeColors(colors, node.children[i], colorIdx % colors.length);
+                }
+            } else {
+                node.data.$color = colors[colorIdx];
+            }
+         },
     });
 
 }(jQuery, window.$jit));

@@ -40,7 +40,7 @@ class TreemapVisualization extends \Piwik\Plugin
 
     public function getCssFiles(&$cssFiles)
     {
-        //$cssFiles[] = // TODO
+        $cssFiles[] = 'plugins/TreemapVisualization/stylesheets/treemap.less';
     }
 
     public function getJsFiles(&$jsFiles)
