@@ -33,6 +33,8 @@ class Treemap extends Graph
      */
     public function __construct($view)
     {
+        parent::__construct($view);
+
         $view->datatable_js_type = 'TreemapDataTable';
         $view->request_parameters_to_modify['expanded'] = 1;
         $view->request_parameters_to_modify['depth'] = 1;
@@ -53,6 +55,16 @@ class Treemap extends Graph
         $view->graphData = $this->getGraphData($dataTable, $properties);
         $view->properties = $properties;
         return $view->render();
+    }
+
+    /**
+     * TODO
+     */
+    public static function getDefaultPropertyValues()
+    {
+        $result = parent::getDefaultPropertyValues();
+        $result['visualization_properties']['graph']['max_graph_elements'] = 6;
+        return $result;
     }
 
     private function getGraphData($dataTable, $properties)
