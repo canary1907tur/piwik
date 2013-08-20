@@ -39,15 +39,15 @@
                 titleHeight: 15,
                 animate: true, // TODO: disable on ipad/w/o native canvas support
                 offset: 1,
+                levelsToShow: 2,
+                constrained: true,
                 Events: {
                     enable: true,
                     onClick: function (node) {
-                        if (node) {
-                            self.treemap.enter(node);
-                        }
+                        self._onLeftClickNode(node);
                     },
-                    onRightClick: function () {
-                        self.treemap.out();
+                    onRightClick: function (node) {
+                        self._onRightClickNode(node);
                     },
                 },
                 duration: 1000, // TODO: what is this for?
@@ -59,11 +59,11 @@
                 },
             });
 
-            var data = JSON.parse(treemapContainer.attr('data-data'));
-            this._prependDataTableIdToNodeIds(thisId, data);
-            this._setTreemapColors(data);
+            this.data = JSON.parse(treemapContainer.attr('data-data'));
+            this._prependDataTableIdToNodeIds(thisId, this.data);
+            this._setTreemapColors(this.data);
 
-            this.treemap.loadJSON(data);
+            this.treemap.loadJSON(this.data);
             this.treemap.refresh();
         },
 
@@ -104,6 +104,84 @@
                 node.data.$color = colors[colorIdx];
             }
          },
+
+        /**
+         * TODO
+         */
+        _onLeftClickNode: function (node) {
+            if (!node) {
+                return;
+            }
+
+            if (this._isOthersNode(node)) {
+                this._enterOthersNode(node);
+            } else if (this._nodeHasSubtable(node)) {
+                this._enterSubtable(node);
+            }
+        },
+
+        /**
+         * TODO
+         */
+        _enterOthersNode: function (node) {
+            if (!node.data.loaded) {
+                var self = this;
+                this._loadOthersNodeChildren(node, function () {
+                    self.treemap.enter(node);
+                });
+            } else {
+                this.treemap.enter(node);
+            }
+        },
+
+        /**
+         * TODO
+         */
+        _enterSubtable: function (node) {
+            if (!node.data.loaded) {
+                var self = this;
+                this._loadSubtableNodeChildren(node, function () {
+                    self.treemap.enter(node);
+                });
+            } else {
+                this.treemap.enter(node);
+            }
+        },
+
+        /**
+         * TODO
+         */
+        _loadOthersNodeChildren: function (node, callback) {
+            // TODO
+        },
+
+        /**
+         * TODO
+         */
+        _loadSubtableNodeChildren: function (node, callback) {
+            // TODO
+        },
+
+        /**
+         * TODO
+         */
+        _isOthersNode: function (node) {
+            return this._getRowIdFromNode(node) == -1;
+        },
+
+        /**
+         * TODO
+         */
+        _nodeHasSubtable: function (node) {
+            return !! node.data.idSubtable;
+        },
+
+        /**
+         * TODO
+         */
+        _onRightClickNode: function (node) {
+            self.treemap.out();
+        },
     });
 
 }(jQuery, window.$jit));

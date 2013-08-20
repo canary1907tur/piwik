@@ -82,6 +82,8 @@ class Treemap extends Graph
 
             $childNode = $this->makeNode($id, $row->getColumn('label'), $data = array('$area' => $columnValue));
             if ($row->getIdSubDataTable() !== null) {
+                $childNode['data']['idSubtable'] = $row->getIdSubDataTable();
+                
                 $this->addSubtableToNode($childNode, $row);
             }
 
