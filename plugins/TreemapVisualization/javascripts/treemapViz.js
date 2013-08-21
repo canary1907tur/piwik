@@ -152,14 +152,16 @@
          * TODO
          */
         _loadOthersNodeChildren: function (node, callback) {
-            // TODO
+            var ajax = this._getDataAjax({filter_offset: node.data.aggregate_offset}); // TODO
+            ajax.send();
         },
 
         /**
          * TODO
          */
         _loadSubtableNodeChildren: function (node, callback) {
-            // TODO
+            var ajax = this._getDataAjax({idSubtable: node.data.idSubtable});
+            ajax.send();
         },
 
         /**

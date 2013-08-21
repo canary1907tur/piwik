@@ -23,6 +23,8 @@ class Treemap extends Graph
     const FOOTER_ICON = 'plugins/TreemapVisualization/images/treemap-icon.png';
     const FOOTER_ICON_TITLE = 'Treemap';
 
+    public static $clientSideProperties = array('filter_offset');
+
     /**
      * TODO
      */
@@ -70,18 +72,21 @@ class Treemap extends Graph
     private function getGraphData($dataTable, $properties)
     {
         $root = $this->makeNode('treemap-root', $properties['title']);
-        $this->addDataTableToNode($root, $dataTable);
+        $this->addDataTableToNode($root, $dataTable, $tableId = '', $properties['filter_offset'] ?: 0);
         return json_encode($root);
     }
 
-    private function addDataTableToNode(&$node, $dataTable, $tableId = '')
+    private function addDataTableToNode(&$node, $dataTable, $tableId = '', $offset = 0)
     {
         foreach ($dataTable->getRows() as $rowId => $row) {
             $id = $tableId . '_' . $rowId;
             $columnValue = $row->getColumn($this->metricToGraph) ?: 0;
 
             $childNode = $this->makeNode($id, $row->getColumn('label'), $data = array('$area' => $columnValue));
-            if ($row->getIdSubDataTable() !== null) {
+
+            if ($rowId == ) {
+                $childNode['data']['aggregate_offset'] = $offset + $dataTable->getRows() - 1;
+            } else if ($row->getIdSubDataTable() !== null) {
                 $childNode['data']['idSubtable'] = $row->getIdSubDataTable();
                 
                 $this->addSubtableToNode($childNode, $row);
