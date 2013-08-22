@@ -10,6 +10,9 @@
  */
 namespace Piwik\Plugins\TreemapVisualization;
 
+use Piwik\Common;
+use Piwik\API\Request;
+
 /**
  * TODO
  */
@@ -28,8 +31,12 @@ class API
     /**
      * TODO
      */
-    public function getTreemapData($apiModule, $apiMethod, $idSite, $date, $period, $segment = false)
+    public function getTreemapData($apiModule, $apiMethod)
     {
-        // TODO
+        $dataTable = Request::processRequest("$apiModule.$apiMethod");
+
+        $generator = new TreemapDataGenerator();
+        $generator->setInitialRowOffset(Common::getRequestVar('filter_offset', 0, 'int'));
+        return $generator->generate($dataTable);
     }
 }

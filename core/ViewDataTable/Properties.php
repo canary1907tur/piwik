@@ -70,6 +70,11 @@ class Properties
     const LIMIT = 'filter_limit';
 
     /**
+     * TODO
+     */
+    const OFFSET = 'filter_offset';
+
+    /**
      * Controls whether the 'Exclude Low Population' option (visible in the popup that displays after
      * clicking the 'cog' icon) is shown.
      */
@@ -528,6 +533,7 @@ class Properties
             'filter_pattern' => false,
             'filter_column' => false,
             'filter_limit' => false,
+            'filter_offset' => false,
             'filter_sort_column' => false,
             'filter_sort_order' => false,
             'custom_parameters' => array(),

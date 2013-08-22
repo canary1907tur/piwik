@@ -12,6 +12,7 @@
 namespace Piwik\Plugins\TreemapVisualization;
 
 use Piwik\View;
+use Piwik\DataTable;
 use Piwik\Visualization\Graph;
 
 /**
@@ -71,41 +72,9 @@ class Treemap extends Graph
 
     private function getGraphData($dataTable, $properties)
     {
-        $root = $this->makeNode('treemap-root', $properties['title']);
-        $this->addDataTableToNode($root, $dataTable, $tableId = '', $properties['filter_offset'] ?: 0);
-        return json_encode($root);
-    }
-
-    private function addDataTableToNode(&$node, $dataTable, $tableId = '', $offset = 0)
-    {
-        foreach ($dataTable->getRows() as $rowId => $row) {
-            $id = $tableId . '_' . $rowId;
-            $columnValue = $row->getColumn($this->metricToGraph) ?: 0;
-
-            $childNode = $this->makeNode($id, $row->getColumn('label'), $data = array('$area' => $columnValue));
-
-            if ($rowId == ) {
-                $childNode['data']['aggregate_offset'] = $offset + $dataTable->getRows() - 1;
-            } else if ($row->getIdSubDataTable() !== null) {
-                $childNode['data']['idSubtable'] = $row->getIdSubDataTable();
-                
-                $this->addSubtableToNode($childNode, $row);
-            }
-
-            $node['children'][] = $childNode;
-        }
-    }
-
-    private function addSubtableToNode(&$childNode, $subTableRow)
-    {
-        $subTable = $subTableRow->getSubtable();
-        $subTable->filter('AddSummaryRow', array(4, Piwik_Translate('General_Others'), $columnToSort = $this->metricToGraph)); //TODO: make constants customizable
-
-        $this->addDataTableToNode($childNode, $subTable, $subTableRow->getIdSubDataTable());
-    }
-
-    private function makeNode($id, $title, $data = array())
-    {
-        return array('id' => $id, 'name' => $title, 'data' => $data, 'children' => array());
+        $generator = new TreemapDataGenerator();
+        $generator->setRootNodeName($properties['title']);
+        $generator->setInitialRowOffset($properties['filter_offset'] ?: 0);
+        return json_encode($generator->generate($dataTable));
     }
 }

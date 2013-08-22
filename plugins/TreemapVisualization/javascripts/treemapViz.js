@@ -152,7 +152,7 @@
          * TODO
          */
         _loadOthersNodeChildren: function (node, callback) {
-            var ajax = this._getDataAjax({filter_offset: node.data.aggregate_offset}); // TODO
+            var ajax = this._getNodeChildrenAjax({filter_offset: node.data.aggregate_offset}, node, callback);
             ajax.send();
         },
 
@@ -160,8 +160,30 @@
          * TODO
          */
         _loadSubtableNodeChildren: function (node, callback) {
-            var ajax = this._getDataAjax({idSubtable: node.data.idSubtable});
+            var ajax = this._getNodeChildrenAjax({idSubtable: node.data.idSubtable}, node, callback);
             ajax.send();
+        },
+
+        /**
+         * TODO
+         */
+        _getNodeChildrenAjax: function (overrideParams, node, callback) {
+            var params = $.extend(this.param, overrideParams, {
+                'module': 'API',
+                'method': 'TreemapVisualization.getTreemapData',
+                'apiModule': this.param.module,
+                'apiMethod': this.param.method, // TODO: will this work for all subtables?
+                'format': 'json'
+            });
+
+            var ajax = new ajaxHelper();
+            ajax.addParams(params, 'get');
+            ajax.setCallback(function (response) {
+                node.children = response.children;
+                callback();
+            });
+            ajax.setFormat('json');
+            return ajax;
         },
 
         /**
@@ -181,8 +203,15 @@
         /**
          * TODO
          */
+        _getRowIdFromNode: function (node) {
+            return node.id.substring(node.id.lastIndexOf('_') + 1);
+        },
+
+        /**
+         * TODO
+         */
         _onRightClickNode: function (node) {
-            self.treemap.out();
+            this.treemap.out();
         },
     });
 
