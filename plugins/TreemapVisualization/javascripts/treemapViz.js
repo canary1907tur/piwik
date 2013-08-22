@@ -173,7 +173,8 @@
                 'method': 'TreemapVisualization.getTreemapData',
                 'apiModule': this.param.module,
                 'apiMethod': this.param.method, // TODO: will this work for all subtables?
-                'format': 'json'
+                'format': 'json',
+                'columns': this.param.columns
             });
 
             var ajax = new ajaxHelper();
@@ -215,4 +216,4 @@
         },
     });
 
-}(jQuery, window.$jit));
+}(jQuery, $jit));

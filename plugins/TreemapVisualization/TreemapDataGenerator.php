@@ -10,6 +10,8 @@
  */
 namespace Piwik\Plugins\TreemapVisualization;
 
+use Piwik\DataTable;
+
 /**
  * TODO
  */
@@ -24,6 +26,19 @@ class TreemapDataGenerator
      * TODO
      */
     private $firstRowOffset = 0;
+
+    /**
+     * TODO
+     */
+    private $metricToGraph;
+
+    /**
+     * TODO
+     */
+    public function __construct($metricToGraph)
+    {
+        $this->metricToGraph = $metricToGraph;
+    }
 
     /**
      * TODO

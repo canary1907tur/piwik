@@ -31,11 +31,14 @@ class API
     /**
      * TODO
      */
-    public function getTreemapData($apiModule, $apiMethod)
+    public function getTreemapData($apiModule, $apiMethod, $columns)
     {
         $dataTable = Request::processRequest("$apiModule.$apiMethod");
 
-        $generator = new TreemapDataGenerator();
+        $columns = explode(',', $columns);
+        $column = reset($columns);
+
+        $generator = new TreemapDataGenerator($column);
         $generator->setInitialRowOffset(Common::getRequestVar('filter_offset', 0, 'int'));
         return $generator->generate($dataTable);
     }

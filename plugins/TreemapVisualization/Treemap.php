@@ -12,7 +12,6 @@
 namespace Piwik\Plugins\TreemapVisualization;
 
 use Piwik\View;
-use Piwik\DataTable;
 use Piwik\Visualization\Graph;
 
 /**
@@ -29,11 +28,6 @@ class Treemap extends Graph
     /**
      * TODO
      */
-    private $metricToGraph;
-
-    /**
-     * TODO
-     */
     public function __construct($view)
     {
         parent::__construct($view);
@@ -41,6 +35,11 @@ class Treemap extends Graph
         $view->datatable_js_type = 'TreemapDataTable';
         $view->request_parameters_to_modify['expanded'] = 1;
         $view->request_parameters_to_modify['depth'] = 1;
+
+        $self = $this;
+        $view->filters[] = function ($dataTable, $view) use ($self) {
+            $view->custom_parameters['columns'] = $self->getMetricToGraph($view->columns_to_display);
+        };
     }
 
     /**
@@ -48,12 +47,6 @@ class Treemap extends Graph
      */
     public function render($dataTable, $properties)
     {
-        $firstColumn = reset($properties['columns_to_display']);
-        if ($firstColumn == 'label') {
-            $firstColumn = next($properties['columns_to_display']);
-        }
-        $this->metricToGraph = $firstColumn;
-
         $view = new View('@TreemapVisualization/_dataTableViz_treemap.twig');
         $view->graphData = $this->getGraphData($dataTable, $properties);
         $view->properties = $properties;
@@ -72,9 +65,18 @@ class Treemap extends Graph
 
     private function getGraphData($dataTable, $properties)
     {
-        $generator = new TreemapDataGenerator();
+        $generator = new TreemapDataGenerator($this->getMetricToGraph($properties['columns_to_display'])); // TODO: doesn't need to be a private property
         $generator->setRootNodeName($properties['title']);
         $generator->setInitialRowOffset($properties['filter_offset'] ?: 0);
         return json_encode($generator->generate($dataTable));
+    }
+
+    public function getMetricToGraph($columnsToDisplay)
+    {
+        $firstColumn = reset($columnsToDisplay);
+        if ($firstColumn == 'label') {
+            $firstColumn = next($columnsToDisplay);
+        }
+        return $firstColumn;
     }
 }

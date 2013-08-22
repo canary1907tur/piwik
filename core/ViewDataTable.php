@@ -494,10 +494,6 @@ class ViewDataTable
      */
     protected function postDataTableLoadedFromAPI()
     {
-        if (empty($this->dataTable)) {
-            return false;
-        }
-        
         $columns = $this->dataTable->getColumns();
         $haveNbVisits = in_array('nb_visits', $columns);
         $haveNbUniqVisitors = in_array('nb_uniq_visitors', $columns);
@@ -1027,14 +1023,14 @@ class ViewDataTable
         } catch (\Exception $e) {
             Piwik::log("Failed to get data from API: " . $e->getMessage());
 
-            $this->loadingError = array('message' => $e->getMessage());
+            $loadingError = array('message' => $e->getMessage());
         }
 
         $template = $this->viewProperties['datatable_template'];
         $view = new View($template);
 
-        if (!empty($this->loadingError)) {
-            $view->error = $this->loadingError;
+        if (!empty($loadingError)) {
+            $view->error = $loadingError;
         }
 
         $view->visualization = $visualization;
