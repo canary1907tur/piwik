@@ -29,8 +29,8 @@
 
             dataTablePrototype.init.apply(this, arguments);
 
-            var thisId = domElem.attr('id');
-            var treemapContainerId = thisId + '-infoviz-treemap';
+            this.thisId = domElem.attr('id');
+            var treemapContainerId = this.thisId + '-infoviz-treemap';
             var treemapContainer = $('.infoviz-treemap', domElem).attr('id', treemapContainerId);
 
             var self = this;
@@ -60,7 +60,7 @@
             });
 
             this.data = JSON.parse(treemapContainer.attr('data-data'));
-            this._prependDataTableIdToNodeIds(thisId, this.data);
+            this._prependDataTableIdToNodeIds(this.thisId, this.data);
             this._setTreemapColors(this.data);
 
             this.treemap.loadJSON(this.data);
@@ -126,8 +126,8 @@
         _enterOthersNode: function (node) {
             if (!node.data.loaded) {
                 var self = this;
-                this._loadOthersNodeChildren(node, function () {
-                    self.treemap.enter(node);
+                this._loadOthersNodeChildren(node, function (newNode) {
+                    self.treemap.enter(newNode);
                 });
             } else {
                 this.treemap.enter(node);
@@ -140,8 +140,8 @@
         _enterSubtable: function (node) {
             if (!node.data.loaded) {
                 var self = this;
-                this._loadSubtableNodeChildren(node, function () {
-                    self.treemap.enter(node);
+                this._loadSubtableNodeChildren(node, function (newNode) {
+                    self.treemap.enter(newNode);
                 });
             } else {
                 this.treemap.enter(node);
@@ -168,20 +168,37 @@
          * TODO
          */
         _getNodeChildrenAjax: function (overrideParams, node, callback) {
-            var params = $.extend(this.param, overrideParams, {
-                'module': 'API',
-                'method': 'TreemapVisualization.getTreemapData',
-                'apiModule': this.param.module,
-                'apiMethod': this.param.method, // TODO: will this work for all subtables?
-                'format': 'json',
-                'columns': this.param.columns
-            });
+            var self = this,
+                dataNode = this._findNodeWithId(node.id),
+                params = $.extend({}, this.param, overrideParams, {
+                    module: 'API',
+                    method: 'TreemapVisualization.getTreemapData',
+                    action: 'index',
+                    apiMethod: this.param.module + '.' + this.param.action, // TODO: will this work for all subtables?
+                    format: 'json',
+                    columns: this.param.columns,
+                    filter_truncate: this.props.max_graph_elements - 1,
+                    filter_limit: -1
+                });
+
+            // make sure parallel load data requests aren't made
+            node.data.loaded = dataNode.data.loaded = true;
 
             var ajax = new ajaxHelper();
             ajax.addParams(params, 'get');
             ajax.setCallback(function (response) {
-                node.children = response.children;
-                callback();
+                self._prependDataTableIdToNodeIds(self.thisId, response);
+                self._setTreemapColors(response);
+
+                dataNode.children = response.children;
+                self.treemap.loadJSON(self.data);
+
+                // refresh the treemap w/o animation
+                self.treemap.config.animate = false;
+                self.treemap.refresh();
+                self.treemap.config.animate = true;
+
+                callback(self.treemap.graph.getNode(node.id));
             });
             ajax.setFormat('json');
             return ajax;
@@ -213,6 +230,23 @@
          */
         _onRightClickNode: function (node) {
             this.treemap.out();
+        },
+
+        _findNodeWithId: function (id, node) {
+            if (!node) {
+                node = this.data;
+            }
+
+            if (node.id == id) {
+                return node;
+            }
+
+            for (var i = 0; i != node.children.length; ++i) {
+                var result = this._findNodeWithId(id, node.children[i]);
+                if (result) {
+                    return result;
+                }
+            }
         },
     });
 

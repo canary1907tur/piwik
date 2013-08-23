@@ -11,6 +11,7 @@
 
 namespace Piwik\Plugins\TreemapVisualization;
 
+use Piwik\Common;
 use Piwik\View;
 use Piwik\Visualization\Graph;
 
@@ -23,7 +24,7 @@ class Treemap extends Graph
     const FOOTER_ICON = 'plugins/TreemapVisualization/images/treemap-icon.png';
     const FOOTER_ICON_TITLE = 'Treemap';
 
-    public static $clientSideProperties = array('filter_offset');
+    public static $clientSideProperties = array('filter_offset', 'max_graph_elements');
 
     /**
      * TODO
@@ -35,6 +36,8 @@ class Treemap extends Graph
         $view->datatable_js_type = 'TreemapDataTable';
         $view->request_parameters_to_modify['expanded'] = 1;
         $view->request_parameters_to_modify['depth'] = 1;
+        $view->show_pagination_control = false;
+        $view->show_offset_information = false;
 
         $self = $this;
         $view->filters[] = function ($dataTable, $view) use ($self) {
@@ -68,7 +71,7 @@ class Treemap extends Graph
         $generator = new TreemapDataGenerator($this->getMetricToGraph($properties['columns_to_display'])); // TODO: doesn't need to be a private property
         $generator->setRootNodeName($properties['title']);
         $generator->setInitialRowOffset($properties['filter_offset'] ?: 0);
-        return json_encode($generator->generate($dataTable));
+        return Common::json_encode($generator->generate($dataTable));
     }
 
     public function getMetricToGraph($columnsToDisplay)

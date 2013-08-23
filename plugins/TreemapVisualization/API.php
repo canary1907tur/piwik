@@ -31,9 +31,9 @@ class API
     /**
      * TODO
      */
-    public function getTreemapData($apiModule, $apiMethod, $columns)
+    public function getTreemapData($apiMethod, $columns)
     {
-        $dataTable = Request::processRequest("$apiModule.$apiMethod");
+        $dataTable = Request::processRequest("$apiMethod");
 
         $columns = explode(',', $columns);
         $column = reset($columns);

@@ -69,7 +69,7 @@ class TreemapDataGenerator
     private function addDataTableToNode(&$node, $dataTable, $tableId = '', $offset = 0)
     {
         foreach ($dataTable->getRows() as $rowId => $row) {
-            $id = $tableId . '_' . $rowId;
+            $id = $this->getNodeId($tableId, $rowId);
             $columnValue = $row->getColumn($this->metricToGraph) ?: 0;
 
             $childNode = $this->makeNode($id, $row->getColumn('label'), $data = array('$area' => $columnValue));
@@ -92,6 +92,17 @@ class TreemapDataGenerator
         $subTable->filter('AddSummaryRow', array(4, Piwik_Translate('General_Others'), $columnToSort = $this->metricToGraph)); //TODO: make constants customizable
 
         $this->addDataTableToNode($childNode, $subTable, $subTableRow->getIdSubDataTable());
+    }
+
+    private function getNodeId($tableId, $rowId)
+    {
+        if ($rowId == DataTable::ID_SUMMARY_ROW) {
+            $rowId = $this->firstRowOffset . '_' . $rowId;
+        } else {
+            $rowId = $this->firstRowOffset += $rowId;
+        }
+
+        return $tableId . '_' . $rowId;
     }
 
     private function makeNode($id, $title, $data = array())
