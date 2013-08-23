@@ -55,7 +55,8 @@
                     enable: false, // TODO: enable
                 },
                 onCreateLabel: function (nodeElement, node) {
-                    $(nodeElement).append($('<span></span>').text(node.name).addClass("infoviz-treemap-node-label"));
+                    var label = $('<span></span>').text(node.name).addClass("infoviz-treemap-node-label");
+                    $(nodeElement).append(label);
                 },
             });
 
