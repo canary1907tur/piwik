@@ -575,6 +575,8 @@ class ViewDataTable
         }
 
         if (!$this->areQueuedFiltersDisabled()) {
+            $this->dataTable->applyQueuedFilters();
+
             // Finally, apply datatable filters that were queued (should be 'presentation' filters that
             // do not affect the number of rows)
             foreach ($otherFilters as $filter) {
@@ -651,7 +653,8 @@ class ViewDataTable
         $requestArray = array(
             'method'                  => $this->viewProperties['apiMethodToRequestDataTable'],
             'format'                  => 'original',
-            'disable_generic_filters' => Common::getRequestVar('disable_generic_filters', 1, 'int')
+            'disable_generic_filters' => Common::getRequestVar('disable_generic_filters', 1, 'int'),
+            'disable_queued_filters'  => Common::getRequestVar('disable_queued_filters', 1, 'int')
         );
 
         $toSetEventually = array(
@@ -663,7 +666,6 @@ class ViewDataTable
             'filter_excludelowpop_value',
             'filter_column',
             'filter_pattern',
-            'disable_queued_filters',
         );
 
         foreach ($toSetEventually as $varToSet) {
