@@ -30,6 +30,7 @@ class TreemapVisualization extends \Piwik\Plugin
             'AssetManager.getCssFiles'            => 'getCssFiles',
             'AssetManager.getJsFiles'             => 'getJsFiles',
             'DataTableVisualization.getAvailable' => 'getAvailableDataTableVisualizations',
+            'ViewDataTable.configureReportView'   => 'enableTreemapForActions'
         );
     }
 
@@ -47,5 +48,16 @@ class TreemapVisualization extends \Piwik\Plugin
     {
         $jsFiles[] = 'libs/Jit/jit-2.0.1-yc.js';
         $jsFiles[] = 'plugins/TreemapVisualization/javascripts/treemapViz.js';
+    }
+
+    public function enableTreemapForActions($view)
+    {
+        // make sure treemap is shown on actions reports
+        if (strpos($view->getReportApiMethod(), 'Actions.') === 0) {
+            $view->show_all_views_icons = true;
+            $view->show_bar_chart = false;
+            $view->show_pie_chart = false;
+            $view->show_tag_cloud = false;
+        }
     }
 }

@@ -61,6 +61,11 @@ use Piwik\Plugins\API\API;
 class ViewDataTable
 {
     /**
+     * TODO
+     */
+    const CONFIGURE_VIEW_EVENT = 'ViewDataTable.configureReportView';
+
+    /**
      * The class name of the visualization to use.
      * 
      * @var string|null
@@ -160,6 +165,14 @@ class ViewDataTable
         }
 
         $this->loadDocumentation();
+    }
+
+    /**
+     * TODO
+     */
+    public function getReportApiMethod()
+    {
+        return $this->viewProperties['apiMethodToRequestDataTable'];
     }
 
     /**
@@ -1013,6 +1026,7 @@ class ViewDataTable
     protected function buildView()
     {
         $visualization = new $this->visualizationClass($this);
+        Piwik_PostEvent(self::CONFIGURE_VIEW_EVENT, array($this));
         $this->overrideViewProperties();
 
         try {
